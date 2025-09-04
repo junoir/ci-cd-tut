@@ -49,19 +49,19 @@ jobs:
           docker login -u $D_USER -p $D_PASS
       - name: Build and tag Image
         run: |
-          docker build -t ${{env.IMAGE}} .
+          docker build -t ${{secrets.IMAGE}} .
       - name: Push the image to Docker hub
         run: |
-          docker push ${{env.IMAGE}}
+          docker push ${{secrets.IMAGE}}
       - name: Enable the Billing API
         run: |
           gcloud services enable cloudbilling.googleapis.com --project=${{secrets.GCP_PROJECT_ID}}
       - name: Deploy to GCP Run - Production environment (If a new release was published from the master branch)
         if: github.event_name == 'release' && github.event.action == 'published' && github.event.release.target_commitish == 'main'
         run: |
-          gcloud run deploy ${{vars.GCR_PROJECT_NAME}} \
-          --region ${{vars.GCR_REGION}} \
-          --image ${{env.IMAGE}} \
+          gcloud run deploy ${{secrets.GCR_PROJECT_NAME}} \
+          --region ${{secrets.GCR_REGION}} \
+          --image ${{secrets.IMAGE}} \
           --platform "managed" \
           --allow-unauthenticated \
           --tag production \
@@ -70,8 +70,8 @@ jobs:
         run: |
           echo "Deploying to staging environment"
           # Deploy service with to staging environment
-          gcloud run deploy ${{vars.GCR_STAGING_PROJECT_NAME}} \
-          --region ${{vars.GCR_REGION}} \
+          gcloud run deploy ${{secrets.GCR_STAGING_PROJECT_NAME}} \
+          --region ${{secrets.GCR_REGION}} \
           --image ${{env.IMAGE}} \
           --platform "managed" \
           --allow-unauthenticated \
