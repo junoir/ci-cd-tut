@@ -49,7 +49,7 @@ jobs:
           docker login -u $D_USER -p $D_PASS
       - name: Build and tag Image
         run: |
-          docker build -t ${{env.IMAGE}} .
+          docker build -t ${{env.IMAGE}}
       - name: Push the image to Docker hub
         run: |
           docker push ${{env.IMAGE}}
